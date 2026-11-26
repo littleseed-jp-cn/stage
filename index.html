@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Little Seed Nhật – Trung | Học một lần được hai ngôn ngữ</title>
+  <title>Little Seed Trung – Nhật | Lộ trình HSK 3 cho bé</title>
   <style>
     :root {
       --primary: #FF7A59;
@@ -14,7 +14,7 @@
       --card: #FFFFFF;
     }
     * { box-sizing: border-box; font-family: 'Segoe UI', 'Hiragino Sans', 'Microsoft YaHei', sans-serif; }
-    body { margin: 0; background: var(--bg); color: var(--dark); padding-bottom: 40px; }
+    body { margin: 0; background: var(--bg); color: var(--dark); padding-bottom: 50px; }
     header {
       background: linear-gradient(135deg, var(--primary), #FF9F1C);
       color: white; padding: 18px 20px; text-align: center;
@@ -22,7 +22,7 @@
     }
     header h1 { margin: 0; font-size: 1.5rem; }
     header p { margin: 5px 0 0; font-size: 0.95rem; opacity: 0.95; }
-    .container { max-width: 820px; margin: 20px auto; padding: 0 15px; }
+    .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
     
     /* Thanh chọn ngày */
     .day-nav {
@@ -36,60 +36,91 @@
     }
     .day-btn.active { background: var(--secondary); color: white; transform: scale(1.05); }
     .day-btn.done::after { content: " ⭐"; }
+    .day-btn.locked::before { content: "🔒 "; }
 
-    /* Điều khiển tốc độ đọc */
+    /* Thanh điều khiển âm thanh */
     .controls {
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
       background: white; padding: 12px 16px; border-radius: 14px;
       margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
-    .speed-btn {
-      background: var(--accent); border: none; padding: 8px 14px;
-      border-radius: 12px; font-weight: bold; cursor: pointer;
+    .control-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .speed-btn, .autoplay-btn {
+      border: none; padding: 8px 14px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 0.9rem;
     }
+    .speed-btn { background: var(--accent); color: var(--dark); }
     .speed-btn.slow { background: #FFD166; border: 2px solid var(--primary); }
+    .autoplay-btn { background: #E0FBFC; color: #005F73; border: 2px solid var(--secondary); }
+    .autoplay-btn.playing { background: #FFCCD5; color: #9B2226; border-color: #C9184A; }
 
-    /* Tiêu đề bài học */
+    /* Khung khóa mở bài học */
+    .gate-box {
+      background: white; border: 3px solid var(--primary); border-radius: 20px;
+      padding: 25px 20px; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      max-width: 500px; margin: 20px auto;
+    }
+    .gate-box h3 { color: var(--primary); margin-top: 0; font-size: 1.35rem; }
+    .gate-form { display: flex; flex-direction: column; gap: 12px; text-align: left; margin-top: 15px; }
+    .gate-form label { font-weight: bold; font-size: 0.9rem; }
+    .gate-form input, .gate-form select {
+      padding: 12px; border: 2px solid #ddd; border-radius: 10px; font-size: 1rem; width: 100%;
+    }
+    .btn-unlock {
+      background: var(--primary); color: white; border: none; padding: 14px;
+      border-radius: 12px; font-size: 1.05rem; font-weight: bold; cursor: pointer; margin-top: 6px;
+    }
+    .privacy-note { font-size: 0.8rem; color: #777; text-align: center; margin-top: 8px; }
+
+    /* Tiêu đề & Thẻ từ vựng 10 từ */
     .lesson-header {
       background: white; border-left: 6px solid var(--primary);
       padding: 15px 20px; border-radius: 12px; margin-bottom: 20px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
     .lesson-header h2 { margin: 0; color: var(--primary); font-size: 1.3rem; }
-
-    /* Lưới thẻ từ vựng */
-    .section-title { font-size: 1.15rem; margin: 20px 0 12px; display: flex; align-items: center; gap: 8px; font-weight: bold; }
+    .section-title { font-size: 1.15rem; margin: 22px 0 12px; font-weight: bold; }
+    
     .vocab-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px;
     }
     .vocab-card {
-      background: var(--card); border-radius: 16px; padding: 16px; text-align: center;
+      background: var(--card); border-radius: 16px; padding: 14px; text-align: center;
       box-shadow: 0 4px 10px rgba(0,0,0,0.06); border: 2px solid #eee;
-      transition: 0.2s;
+      transition: 0.25s; position: relative;
     }
-    .vocab-card:hover { border-color: var(--secondary); transform: translateY(-2px); }
-    .emoji { font-size: 2.8rem; margin-bottom: 6px; }
+    .vocab-card.speaking-now {
+      border-color: var(--primary); background: #FFFDF0; transform: scale(1.03);
+      box-shadow: 0 6px 16px rgba(255, 122, 89, 0.25);
+    }
+    .card-num {
+      position: absolute; top: 8px; left: 10px; font-size: 0.75rem;
+      background: #f0f0f0; color: #666; padding: 2px 7px; border-radius: 8px; font-weight: bold;
+    }
+    .emoji { font-size: 2.4rem; margin-bottom: 4px; }
     
-    /* Tiếng Nhật chủ đạo */
-    .jp-word { font-size: 1.45rem; font-weight: bold; color: #1D3557; margin: 4px 0; }
-    ruby rt { font-size: 0.75rem; color: #555; font-weight: normal; }
-    .romaji { font-size: 0.85rem; color: #777; margin-bottom: 8px; }
+    /* Tiếng Trung chủ đạo */
+    .cn-word { font-size: 1.5rem; font-weight: bold; color: #D62828; margin: 2px 0; }
+    .pinyin { font-size: 0.9rem; color: #555; font-weight: 600; margin-bottom: 6px; }
     
-    /* Tiếng Việt */
-    .vi-word { font-size: 0.95rem; color: #2D6A4F; background: #E9F5DB; padding: 4px 12px; border-radius: 10px; display: inline-block; font-weight: 600; margin-bottom: 8px; }
+    /* Nghĩa tiếng Việt */
+    .vi-word {
+      font-size: 0.92rem; color: #2D6A4F; background: #E9F5DB;
+      padding: 4px 10px; border-radius: 10px; display: inline-block; font-weight: 600; margin-bottom: 8px;
+    }
     
-    /* Tiếng Trung */
-    .cn-box { border-top: 1px dashed #e0e0e0; padding-top: 8px; margin-top: 4px; }
-    .cn-word { font-size: 1.35rem; font-weight: bold; color: #D62828; }
-    .pinyin { font-size: 0.85rem; color: #666; }
+    /* Tiếng Nhật đi kèm */
+    .jp-box { border-top: 1px dashed #e0e0e0; padding-top: 6px; margin-top: 2px; }
+    .jp-word { font-size: 1.25rem; font-weight: bold; color: #1D3557; }
+    ruby rt { font-size: 0.7rem; color: #666; font-weight: normal; }
+    .romaji { font-size: 0.8rem; color: #777; }
 
-    .audio-row { display: flex; justify-content: center; gap: 8px; margin-top: 12px; }
+    .audio-row { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
     .btn-speak {
-      border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer;
-      font-weight: bold; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;
+      border: none; padding: 7px 10px; border-radius: 10px; cursor: pointer;
+      font-weight: bold; font-size: 0.82rem;
     }
-    .btn-jp { background: #E0FBFC; color: #005F73; }
     .btn-cn { background: #FFE5EC; color: #9B2226; }
+    .btn-jp { background: #E0FBFC; color: #005F73; }
     .btn-speak:active { transform: scale(0.95); }
 
     /* Mẫu câu */
@@ -121,16 +152,19 @@
 <body>
 
 <header>
-  <h1>🌱 Little Seed Nhật – Trung</h1>
-  <p id="welcomeText">Học một lần được hai ngôn ngữ • Stage 1: Khởi động</p>
+  <h1>🌱 Little Seed Trung – Nhật</h1>
+  <p id="welcomeText">10 từ mỗi ngày • Lộ trình chinh phục HSK 3 cho bé</p>
 </header>
 
 <div class="container">
   <div class="day-nav" id="dayNav"></div>
 
   <div class="controls">
-    <span>🔊 Chế độ giọng đọc cho bé:</span>
-    <button class="speed-btn" id="speedToggle" onclick="toggleSpeed()">Tốc độ: Bình thường (1.0x)</button>
+    <div class="control-group">
+      <span>🔊 Giọng đọc:</span>
+      <button class="speed-btn" id="speedToggle" onclick="toggleSpeed()">Tốc độ: Chuẩn (1.0x)</button>
+    </div>
+    <button class="autoplay-btn" id="autoPlayBtn" onclick="toggleAutoPlay()">▶️ Nghe tự động 10 từ</button>
   </div>
 
   <div id="appContent"></div>
@@ -138,156 +172,252 @@
 
 <script>
 // ==========================================
-// KHO DỮ LIỆU 7 NGÀY ĐẦU TIÊN (NHẬT - VIỆT - TRUNG)
+// 1. DÁN LINK GOOGLE APPS SCRIPT CỦA BẠN VÀO ĐÂY (NẾU CÓ):
+// ==========================================
+const GOOGLE_SHEET_URL = "DAN_LINK_WEB_APP_CUA_BAN_VAO_DAY";
+const FREE_DAYS_LIMIT = 3; // Miễn phí Ngày 1 - 3, khóa từ Ngày 4
+
+// ==========================================
+// 2. KHO DỮ LIỆU TUẦN 1 (10 TỪ/NGÀY - LỘ TRÌNH HSK 3)
 // ==========================================
 const LESSONS = [
   {
     day: 1,
-    title: "Ngày 1: Chào hỏi & Giới thiệu",
+    title: "Ngày 1: Chào hỏi & Số đếm 1–5",
     vocab: [
-      { emoji: "🌅", jp: "おはよう", ruby: "おはよう", romaji: "Ohayō", vi: "Chào buổi sáng", cn: "早上好", pinyin: "Zǎoshang hǎo" },
-      { emoji: "👋", jp: "こんにちは", ruby: "こんにちは", romaji: "Konnichiwa", vi: "Xin chào", cn: "你好", pinyin: "Nǐ hǎo" },
-      { emoji: "🙏", jp: "ありがとう", ruby: "ありがとう", romaji: "Arigatō", vi: "Cảm ơn", cn: "谢谢", pinyin: "Xièxie" },
-      { emoji: "📛", jp: "名前", ruby: "なまえ", romaji: "Namae", vi: "Tên", cn: "名字", pinyin: "Míngzi" }
+      { emoji: "👋", cn: "你好", pinyin: "Nǐ hǎo", vi: "Xin chào", jp: "こんにちは", speakJp: "こんにちは", romaji: "Konnichiwa" },
+      { emoji: "🙏", cn: "谢谢", pinyin: "Xièxie", vi: "Cảm ơn", jp: "ありがとう", speakJp: "ありがとう", romaji: "Arigatō" },
+      { emoji: "😊", cn: "不客气", pinyin: "Bú kèqi", vi: "Không có gì", jp: "どういたしまして", speakJp: "どういたしまして", romaji: "Dōitashimashite" },
+      { emoji: "🙋", cn: "再见", pinyin: "Zàijiàn", vi: "Tạm biệt", jp: "さようなら", speakJp: "さようなら", romaji: "Sayōnara" },
+      { emoji: "🙇", cn: "对不起", pinyin: "Duìbuqǐ", vi: "Xin lỗi", jp: "ごめんなさい", speakJp: "ごめんなさい", romaji: "Gomennasai" },
+      { emoji: "1️⃣", cn: "一", pinyin: "Yī", vi: "Số 1", jp: "一", speakJp: "いち", romaji: "Ichi" },
+      { emoji: "2️⃣", cn: "二", pinyin: "Èr", vi: "Số 2", jp: "二", speakJp: "に", romaji: "Ni" },
+      { emoji: "3️⃣", cn: "三", pinyin: "Sān", vi: "Số 3", jp: "三", speakJp: "さん", romaji: "San" },
+      { emoji: "4️⃣", cn: "四", pinyin: "Sì", vi: "Số 4", jp: "四", speakJp: "よん", romaji: "Yon" },
+      { emoji: "5️⃣", cn: "五", pinyin: "Wǔ", vi: "Số 5", jp: "五", speakJp: "ご", romaji: "Go" }
     ],
     sentences: [
-      { jp: "わたしの名前はケンです。", cn: "我的名字叫健。", pinyin: "Wǒ de míngzi jiào Jiàn.", vi: "Tên tớ là Ken." },
-      { jp: "ありがとうございます。", cn: "非常感谢。", pinyin: "Fēicháng gǎnxiè.", vi: "Cảm ơn rất nhiều." }
+      { cn: "你好！谢谢你。", pinyin: "Nǐ hǎo! Xièxie nǐ.", jp: "こんにちは！ありがとうございます。", speakJp: "こんにちは！ありがとうございます。", vi: "Xin chào! Cảm ơn cậu." },
+      { cn: "对不起！— 没关系。", pinyin: "Duìbuqǐ! — Méi guānxi.", jp: "ごめんなさい！— 大丈夫だよ。", speakJp: "ごめんなさい！だいじょうぶだよ。", vi: "Xin lỗi nhé! — Không sao đâu." }
     ],
     quiz: {
-      question: "Buổi sáng thức dậy gặp mẹ, bé chào bằng tiếng Nhật như thế nào?",
-      options: ["おはよう (Zǎoshang hǎo)", "おやすみ (Wǎn'ān)", "ありがとう (Xièxie)"],
-      answer: 0
+      question: "Từ 「对不起」 (tiếng Nhật: ごめんなさい) có nghĩa là gì?",
+      options: ["Cảm ơn", "Xin lỗi", "Tạm biệt"],
+      answer: 1
     }
   },
   {
     day: 2,
-    title: "Ngày 2: Gia đình thân yêu",
+    title: "Ngày 2: Gia đình & Đại từ nhân xưng",
     vocab: [
-      { emoji: "👨", jp: "お父さん", ruby: "おとうさん", romaji: "Otōsan", vi: "Bố", cn: "爸爸", pinyin: "Bàba" },
-      { emoji: "👩", jp: "お母さん", ruby: "おかあさん", romaji: "Okāsan", vi: "Mẹ", cn: "妈妈", pinyin: "Māma" },
-      { emoji: "👦", jp: "お兄さん", ruby: "おにいさん", romaji: "Onīsan", vi: "Anh trai", cn: "哥哥", pinyin: "Gēge" },
-      { emoji: "👧", jp: "お姉さん", ruby: "おねえさん", romaji: "Onēsan", vi: "Chị gái", cn: "姐姐", pinyin: "Jiějie" }
+      { emoji: "🙋‍♂️", cn: "我", pinyin: "Wǒ", vi: "Tôi / Tớ", jp: "私", speakJp: "わたし", romaji: "Watashi" },
+      { emoji: "🫵", cn: "你", pinyin: "Nǐ", vi: "Bạn / Cậu", jp: "あなた", speakJp: "あなた", romaji: "Anata" },
+      { emoji: "👦", cn: "他", pinyin: "Tā", vi: "Anh ấy / Cậu ấy", jp: "彼", speakJp: "かれ", romaji: "Kare" },
+      { emoji: "👧", cn: "她", pinyin: "Tā", vi: "Cô ấy / Bạn ấy", jp: "彼女", speakJp: "かのじょ", romaji: "Kanojo" },
+      { emoji: "👨", cn: "爸爸", pinyin: "Bàba", vi: "Bố", jp: "お父さん", speakJp: "おとうさん", romaji: "Otōsan" },
+      { emoji: "👩", cn: "妈妈", pinyin: "Māma", vi: "Mẹ", jp: "お母さん", speakJp: "おかあさん", romaji: "Okāsan" },
+      { emoji: "🧑", cn: "哥哥", pinyin: "Gēge", vi: "Anh trai", jp: "お兄さん", speakJp: "おにいさん", romaji: "Onīsan" },
+      { emoji: "👱‍♀️", cn: "姐姐", pinyin: "Jiějie", vi: "Chị gái", jp: "お姉さん", speakJp: "おねえさん", romaji: "Onēsan" },
+      { emoji: "🧒", cn: "弟弟", pinyin: "Dìdi", vi: "Em trai", jp: "弟", speakJp: "おとうと", romaji: "Otōto" },
+      { emoji: "👶", cn: "妹妹", pinyin: "Mèimei", vi: "Em gái", jp: "妹", speakJp: "いもうと", romaji: "Imōto" }
     ],
     sentences: [
-      { jp: "わたしはお母さんが好きです。", cn: "我爱我的妈妈。", pinyin: "Wǒ ài wǒ de māma.", vi: "Tớ yêu mẹ của tớ." },
-      { jp: "こちらはお父さんです。", cn: "这位是我爸爸。", pinyin: "Zhè wèi shì wǒ bàba.", vi: "Đây là bố của tớ." }
+      { cn: "我爱爸爸和妈妈。", pinyin: "Wǒ ài bàba hé māma.", jp: "わたしはお父さんとお母さんが大好きです。", speakJp: "わたしはおとうさんとおかあさんがだいすきです。", vi: "Tớ yêu bố và mẹ." },
+      { cn: "他是我弟弟。", pinyin: "Tā shì wǒ dìdi.", jp: "彼はわたしの弟です。", speakJp: "かれはわたしのおとうとです。", vi: "Cậu ấy là em trai của tớ." }
     ],
     quiz: {
-      question: "Từ tiếng Nhật nào tương ứng với 妈妈 (Mẹ)?",
-      options: ["お姉さん", "お母さん", "お父さん"],
+      question: "Chữ 「妹妹」 tương ứng với từ tiếng Nhật nào?",
+      options: ["弟 (Otōto)", "妹 (Imōto)", "お姉さん (Onēsan)"],
       answer: 1
     }
   },
   {
     day: 3,
-    title: "Ngày 3: Động vật quen thuộc",
+    title: "Ngày 3: Động vật & Tính từ cơ bản",
     vocab: [
-      { emoji: "🐶", jp: "犬", ruby: "いぬ", romaji: "Inu", vi: "Con chó", cn: "狗", pinyin: "Gǒu" },
-      { emoji: "🐱", jp: "猫", ruby: "ねこ", romaji: "Neko", vi: "Con mèo", cn: "猫", pinyin: "Māo" },
-      { emoji: "🐦", jp: "鳥", ruby: "とり", romaji: "Tori", vi: "Con chim", cn: "鸟", pinyin: "Niǎo" },
-      { emoji: "🐟", jp: "魚", ruby: "さかな", romaji: "Sakana", vi: "Con cá", cn: "鱼", pinyin: "Yú" }
+      { emoji: "🐱", cn: "猫", pinyin: "Māo", vi: "Con mèo", jp: "猫", speakJp: "ねこ", romaji: "Neko" },
+      { emoji: "🐶", cn: "狗", pinyin: "Gǒu", vi: "Con chó", jp: "犬", speakJp: "いぬ", romaji: "Inu" },
+      { emoji: "🐦", cn: "鸟", pinyin: "Niǎo", vi: "Con chim", jp: "鳥", speakJp: "とり", romaji: "Tori" },
+      { emoji: "🐟", cn: "鱼", pinyin: "Yú", vi: "Con cá", jp: "魚", speakJp: "さかな", romaji: "Sakana" },
+      { emoji: "🐴", cn: "马", pinyin: "Mǎ", vi: "Con ngựa", jp: "馬", speakJp: "うま", romaji: "Uma" },
+      { emoji: "🐑", cn: "羊", pinyin: "Yáng", vi: "Con cừu", jp: "羊", speakJp: "ひつじ", romaji: "Hitsuji" },
+      { emoji: "🐘", cn: "大", pinyin: "Dà", vi: "To / Lớn", jp: "大きい", speakJp: "おおきい", romaji: "Ōkii" },
+      { emoji: "🐜", cn: "小", pinyin: "Xiǎo", vi: "Nhỏ / Bé", jp: "小さい", speakJp: "ちいさい", romaji: "Chīsai" },
+      { emoji: "✨", cn: "多", pinyin: "Duō", vi: "Nhiều", jp: "多い", speakJp: "おおい", romaji: "Ōi" },
+      { emoji: "💧", cn: "少", pinyin: "Shǎo", vi: "Ít", jp: "少ない", speakJp: "すくない", romaji: "Sukunai" }
     ],
     sentences: [
-      { jp: "あれはかわいい猫です。", cn: "那是一只可爱的猫。", pinyin: "Nà shì yī zhī kě'ài de māo.", vi: "Kia là một chú mèo dễ thương." },
-      { jp: "わたしは犬を飼っています。", cn: "我养了一只狗。", pinyin: "Wǒ yǎng le yī zhī gǒu.", vi: "Tớ có nuôi một chú chó." }
+      { cn: "这是一只小猫。", pinyin: "Zhè shì yī zhī xiǎo māo.", jp: "これは小さい猫です。", speakJp: "これはちいさいねこです。", vi: "Đây là một chú mèo nhỏ." },
+      { cn: "那里有很多鱼。", pinyin: "Nàlǐ yǒu hěn duō yú.", jp: "あそこに魚がたくさんいます。", speakJp: "あそこにさかながたくさんいます。", vi: "Ở đằng kia có rất nhiều cá." }
     ],
     quiz: {
-      question: "Chữ Hán 「魚」 trong tiếng Nhật đọc là gì?",
-      options: ["とり (Tori)", "ねこ (Neko)", "さかな (Sakana)"],
-      answer: 2
+      question: "Cặp chữ nào viết giống hệt nhau ở cả tiếng Trung và tiếng Nhật?",
+      options: ["猫 / 马 / 羊", "狗 / 鸟 / 鱼", "猫 / 狗 / 鱼"],
+      answer: 0
     }
   },
   {
     day: 4,
-    title: "Ngày 4: Màu sắc rực rỡ",
+    title: "Ngày 4: Trái cây & Ăn uống",
     vocab: [
-      { emoji: "🔴", jp: "赤", ruby: "あか", romaji: "Aka", vi: "Màu đỏ", cn: "红色", pinyin: "Hóngsè" },
-      { emoji: "🔵", jp: "青", ruby: "あお", romaji: "Ao", vi: "Màu xanh dương", cn: "蓝色", pinyin: "Lánsè" },
-      { emoji: "🟡", jp: "黄色", ruby: "きいろ", romaji: "Kiiro", vi: "Màu vàng", cn: "黄色", pinyin: "Huángsè" },
-      { emoji: "🟢", jp: "緑", ruby: "みどり", romaji: "Midori", vi: "Màu xanh lá", cn: "绿色", pinyin: "Lǜsè" }
+      { emoji: "🍎", cn: "苹果", pinyin: "Píngguǒ", vi: "Quả táo", jp: "りんご", speakJp: "りんご", romaji: "Ringo" },
+      { emoji: "🍌", cn: "香蕉", pinyin: "Xiāngjiāo", vi: "Quả chuối", jp: "バナナ", speakJp: "バナナ", romaji: "Banana" },
+      { emoji: "🍉", cn: "西瓜", pinyin: "Xīguā", vi: "Dưa hấu", jp: "スイカ", speakJp: "スイカ", romaji: "Suika" },
+      { emoji: "🍓", cn: "草莓", pinyin: "Cǎoméi", vi: "Dâu tây", jp: "いちご", speakJp: "いちご", romaji: "Ichigo" },
+      { emoji: "🥛", cn: "牛奶", pinyin: "Niúnǎi", vi: "Sữa bò", jp: "牛乳", speakJp: "ぎゅうにゅう", romaji: "Gyūnyū" },
+      { emoji: "💧", cn: "水", pinyin: "Shuǐ", vi: "Nước", jp: "水", speakJp: "みず", romaji: "Mizu" },
+      { emoji: "🍚", cn: "米饭", pinyin: "Mǐfàn", vi: "Cơm", jp: "ご飯", speakJp: "ごはん", romaji: "Gohan" },
+      { emoji: "🍜", cn: "面条", pinyin: "Miàntiáo", vi: "Mì sợi", jp: "麺", speakJp: "めん", romaji: "Men" },
+      { emoji: "🍽️", cn: "吃", pinyin: "Chī", vi: "Ăn", jp: "食べる", speakJp: "たべる", romaji: "Taberu" },
+      { emoji: "🥤", cn: "喝", pinyin: "Hē", vi: "Uống", jp: "飲む", speakJp: "のむ", romaji: "Nomu" }
     ],
     sentences: [
-      { jp: "これは赤いりんごです。", cn: "这是一个红苹果。", pinyin: "Zhè shì yīgè hóng píngguǒ.", vi: "Đây là một quả táo đỏ." },
-      { jp: "空は青いです。", cn: "天空是蓝色的。", pinyin: "Tiānkōng shì lánsè de.", vi: "Bầu trời màu xanh dương." }
+      { cn: "我喜欢吃草莓。", pinyin: "Wǒ xǐhuān chī cǎoméi.", jp: "わたしはいちごを食べるのが好きです。", speakJp: "わたしはいちごをたべるのがすきです。", vi: "Tớ thích ăn dâu tây." },
+      { cn: "哥哥每天喝牛奶。", pinyin: "Gēge měitiān hē niúnǎi.", jp: "お兄さんは毎日牛乳を飲みます。", speakJp: "おにいさんはまいにちぎゅうにゅうをのみます。", vi: "Anh trai uống sữa mỗi ngày." }
     ],
     quiz: {
-      question: "Bầu trời trong câu 「空は___です」 có màu gì?",
-      options: ["黄色 (Huángsè)", "青い (Lánsè)", "赤い (Hóngsè)"],
+      question: "Điền từ đúng: 「我每天___牛奶。」 (Tớ uống sữa mỗi ngày.)",
+      options: ["吃 (Chī)", "喝 (Hē)", "爱 (Ài)"],
       answer: 1
     }
   },
   {
     day: 5,
-    title: "Ngày 5: Số đếm từ 1 đến 5",
+    title: "Ngày 5: Màu sắc & Thiên nhiên",
     vocab: [
-      { emoji: "1️⃣", jp: "一", ruby: "いち", romaji: "Ichi", vi: "Số một", cn: "一", pinyin: "Yī" },
-      { emoji: "2️⃣", jp: "二", ruby: "に", romaji: "Ni", vi: "Số hai", cn: "二", pinyin: "Èr" },
-      { emoji: "3️⃣", jp: "三", ruby: "さん", romaji: "San", vi: "Số ba", cn: "三", pinyin: "Sān" },
-      { emoji: "4️⃣", jp: "四", ruby: "よん", romaji: "Yon", vi: "Số bốn", cn: "四", pinyin: "Sì" },
-      { emoji: "5️⃣", jp: "五", ruby: "ご", romaji: "Go", vi: "Số năm", cn: "五", pinyin: "Wǔ" }
+      { emoji: "🔴", cn: "红色", pinyin: "Hóngsè", vi: "Màu đỏ", jp: "赤", speakJp: "あか", romaji: "Aka" },
+      { emoji: "🔵", cn: "蓝色", pinyin: "Lánsè", vi: "Màu xanh dương", jp: "青", speakJp: "あお", romaji: "Ao" },
+      { emoji: "🟡", cn: "黄色", pinyin: "Huángsè", vi: "Màu vàng", jp: "黄色", speakJp: "きいろ", romaji: "Kiiro" },
+      { emoji: "🟢", cn: "绿色", pinyin: "Lǜsè", vi: "Màu xanh lá", jp: "緑", speakJp: "みどり", romaji: "Midori" },
+      { emoji: "⚪", cn: "白色", pinyin: "Báisè", vi: "Màu trắng", jp: "白", speakJp: "しろ", romaji: "Shiro" },
+      { emoji: "⚫", cn: "黑色", pinyin: "Hēisè", vi: "Màu đen", jp: "黒", speakJp: "くろ", romaji: "Kuro" },
+      { emoji: "⛰️", cn: "山", pinyin: "Shān", vi: "Ngọn núi", jp: "山", speakJp: "やま", romaji: "Yama" },
+      { emoji: "🌸", cn: "花", pinyin: "Huā", vi: "Bông hoa", jp: "花", speakJp: "はな", romaji: "Hana" },
+      { emoji: "🌳", cn: "树", pinyin: "Shù", vi: "Cái cây", jp: "木", speakJp: "き", romaji: "Ki" },
+      { emoji: "✨", cn: "漂亮", pinyin: "Piàoliang", vi: "Đẹp", jp: "きれい", speakJp: "きれい", romaji: "Kirei" }
     ],
     sentences: [
-      { jp: "りんごが三つあります。", cn: "我有三个苹果。", pinyin: "Wǒ yǒu sān gè píngguǒ.", vi: "Tớ có ba quả táo." },
-      { jp: "わたしは五歳です。", cn: "我五岁了。", pinyin: "Wǒ wǔ suì le.", vi: "Tớ năm tuổi." }
+      { cn: "这朵花真漂亮！", pinyin: "Zhè duǒ huā zhēn piàoliang!", jp: "この花は本当にきれいですね！", speakJp: "このはなはほんとうにきれいですね！", vi: "Bông hoa này thật là đẹp!" },
+      { cn: "树是绿色的。", pinyin: "Shù shì lǜsè de.", jp: "木は緑色です。", speakJp: "きはみどりいろです。", vi: "Cái cây có màu xanh lá." }
     ],
     quiz: {
-      question: "「五歳 (5 tuổi)」 trong tiếng Trung nói như thế nào?",
-      options: ["三岁 (Sān suì)", "四岁 (Sì suì)", "五岁 (Wǔ suì)"],
-      answer: 2
+      question: "Từ 「白色」 trong tiếng Nhật là màu gì?",
+      options: ["黒 (Kuro)", "白 (Shiro)", "青 (Ao)"],
+      answer: 1
     }
   },
   {
     day: 6,
-    title: "Ngày 6: Trái cây & Đồ uống",
+    title: "Ngày 6: Trường học & Học tập",
     vocab: [
-      { emoji: "🍎", jp: "りんご", ruby: "りんご", romaji: "Ringo", vi: "Quả táo", cn: "苹果", pinyin: "Píngguǒ" },
-      { emoji: "🍌", jp: "バナナ", ruby: "バナナ", romaji: "Banana", vi: "Quả chuối", cn: "香蕉", pinyin: "Xiāngjiāo" },
-      { emoji: "🍊", jp: "オレンジ", ruby: "オレンジ", romaji: "Orenji", vi: "Quả cam", cn: "橙子", pinyin: "Chéngzi" },
-      { emoji: "🧃", jp: "ジュース", ruby: "ジュース", romaji: "Jūsu", vi: "Nước ép", cn: "果汁", pinyin: "Guǒzhī" }
+      { emoji: "🏫", cn: "学校", pinyin: "Xuéxiào", vi: "Trường học", jp: "学校", speakJp: "がっこう", romaji: "Gakkō" },
+      { emoji: "👩‍🏫", cn: "老师", pinyin: "Lǎoshī", vi: "Thầy/Cô giáo", jp: "先生", speakJp: "せんせい", romaji: "Sensei" },
+      { emoji: "🎒", cn: "学生", pinyin: "Xuésheng", vi: "Học sinh", jp: "学生", speakJp: "がくせい", romaji: "Gakusei" },
+      { emoji: "👫", cn: "同学", pinyin: "Tóngxué", vi: "Bạn cùng lớp", jp: "同級生", speakJp: "どうきゅうせい", romaji: "Dōkyūsei" },
+      { emoji: "📚", cn: "书", pinyin: "Shū", vi: "Quyển sách", jp: "本", speakJp: "ほん", romaji: "Hon" },
+      { emoji: "✏️", cn: "铅笔", pinyin: "Qiānbǐ", vi: "Bút chì", jp: "鉛筆", speakJp: "えんぴつ", romaji: "Enpitsu" },
+      { emoji: "👀", cn: "看", pinyin: "Kàn", vi: "Nhìn / Xem", jp: "見る", speakJp: "みる", romaji: "Miru" },
+      { emoji: "👂", cn: "听", pinyin: "Tīng", vi: "Nghe", jp: "聞く", speakJp: "きく", romaji: "Kiku" },
+      { emoji: "✍️", cn: "写", pinyin: "Xiě", vi: "Viết", jp: "書く", speakJp: "かく", romaji: "Kaku" },
+      { emoji: "📖", cn: "读", pinyin: "Dú", vi: "Đọc", jp: "読む", speakJp: "よむ", romaji: "Yomu" }
     ],
     sentences: [
-      { jp: "バナナが好きですか？", cn: "你喜欢香蕉吗？", pinyin: "Nǐ xǐhuān xiāngjiāo ma?", vi: "Cậu có thích chuối không?" },
-      { jp: "ジュースを飲みます。", cn: "我喝果汁。", pinyin: "Wǒ hē guǒzhī.", vi: "Tớ uống nước ép." }
+      { cn: "老师在写汉字。", pinyin: "Lǎoshī zài xiě hànzì.", jp: "先生は漢字を書いています。", speakJp: "せんせいはかんじをかいています。", vi: "Thầy giáo đang viết chữ Hán." },
+      { cn: "同学们都在看书。", pinyin: "Tóngxuémen dōu zài kànshū.", jp: "みんな本を読んでいます。", speakJp: "みんなほんをよんでいます。", vi: "Các bạn cùng lớp đều đang đọc sách." }
     ],
     quiz: {
-      question: "Từ tiếng Nhật nào có nghĩa là 「果汁 (Nước ép)」?",
-      options: ["りんご", "バナナ", "ジュース"],
-      answer: 2
+      question: "「学校」 trong tiếng Nhật đọc là gì?",
+      options: ["先生 (Sensei)", "学校 (Gakkō)", "学生 (Gakusei)"],
+      answer: 1
     }
   },
   {
     day: 7,
-    title: "Ngày 7: Đồ dùng học tập",
+    title: "Ngày 7: Cảm xúc & Giao tiếp cơ bản",
     vocab: [
-      { emoji: "📘", jp: "本", ruby: "ほん", romaji: "Hon", vi: "Quyển sách", cn: "书", pinyin: "Shū" },
-      { emoji: "✏️", jp: "鉛筆", ruby: "えんぴつ", romaji: "Enpitsu", vi: "Bút chì", cn: "铅笔", pinyin: "Qiānbǐ" },
-      { emoji: "🎒", jp: "鞄", ruby: "かばん", romaji: "Kaban", vi: "Cặp sách", cn: "书包", pinyin: "Shūbāo" },
-      { emoji: "🪑", jp: "机", ruby: "つくえ", romaji: "Tsukue", vi: "Cái bàn học", cn: "桌子", pinyin: "Zhuōzi" }
+      { emoji: "😄", cn: "高兴", pinyin: "Gāoxìng", vi: "Vui vẻ", jp: "うれしい", speakJp: "うれしい", romaji: "Ureshii" },
+      { emoji: "🥳", cn: "快乐", pinyin: "Kuàilè", vi: "Vui tươi / Hạnh phúc", jp: "楽しい", speakJp: "たのしい", romaji: "Tanoshii" },
+      { emoji: "❤️", cn: "喜欢", pinyin: "Xǐhuān", vi: "Thích", jp: "好き", speakJp: "すき", romaji: "Suki" },
+      { emoji: "📅", cn: "今天", pinyin: "Jīntiān", vi: "Hôm nay", jp: "今日", speakJp: "きょう", romaji: "Kyō" },
+      { emoji: "🌅", cn: "明天", pinyin: "Míngtiān", vi: "Ngày mai", jp: "明日", speakJp: "あした", romaji: "Ashita" },
+      { emoji: "🙆", cn: "有", pinyin: "Yǒu", vi: "Có", jp: "ある / いる", speakJp: "ある", romaji: "Aru / Iru" },
+      { emoji: "🙅", cn: "没有", pinyin: "Méiyǒu", vi: "Không có", jp: "ない / いない", speakJp: "ない", romaji: "Nai / Inai" },
+      { emoji: "👉", cn: "是", pinyin: "Shì", vi: "Là", jp: "〜です", speakJp: "です", romaji: "Desu" },
+      { emoji: "🌟", cn: "很", pinyin: "Hěn", vi: "Rất", jp: "とても", speakJp: "とても", romaji: "Totemo" },
+      { emoji: "❓", cn: "吗", pinyin: "Ma", vi: "Không? (Trợ từ hỏi)", jp: "〜か", speakJp: "か", romaji: "Ka" }
     ],
     sentences: [
-      { jp: "これはわたしの本です。", cn: "这是我的书。", pinyin: "Zhè shì wǒ de shū.", vi: "Đây là quyển sách của tớ." },
-      { jp: "机の上に鉛筆があります。", cn: "桌子上有铅笔。", pinyin: "Zhuōzi shàng yǒu qiānbǐ.", vi: "Có một cây bút chì ở trên bàn." }
+      { cn: "今天我很高兴。", pinyin: "Jīntiān wǒ hěn gāoxìng.", jp: "今日はとてもうれしいです。", speakJp: "きょうはとてもうれしいです。", vi: "Hôm nay tớ rất vui." },
+      { cn: "你喜欢学中文吗？", pinyin: "Nǐ xǐhuān xué Zhōngwén ma?", jp: "中国語を勉強するのが好きですか？", speakJp: "ちゅうごくごをべんきょうするのがすきですか？", vi: "Cậu có thích học tiếng Trung không?" }
     ],
     quiz: {
-      question: "「これはわたしの本です」 nghĩa là gì?",
-      options: ["这是我的书包 (Đây là cặp sách của tớ)", "这是我的书 (Đây là quyển sách của tớ)", "这是我的桌子 (Đây là bàn học của tớ)"],
+      question: "Dịch câu: 「明天见！」 (Gợi ý: 明天 = Ngày mai)",
+      options: ["Hôm nay tớ rất vui.", "Hẹn gặp lại ngày mai!", "Không có gì."],
       answer: 1
     }
   }
 ];
 
 // ==========================================
-// HỆ THỐNG XỬ LÝ PHÁT ÂM & GIAO DIỆN
+// 3. BỘ PHÁT ÂM CHUẨN BẢN XỨ (NEURAL VOICES) & AUTO-PLAY
 // ==========================================
 let speechRate = 1.0;
-let completedDays = JSON.parse(localStorage.getItem('completedDaysJpCn') || '[]');
+let cachedVoices = [];
+let isAutoPlaying = false;
+let autoPlayTimer = null;
+let completedDays = JSON.parse(localStorage.getItem('completedDaysHsk3') || '[]');
 
-// Đọc tham số ?con=TenBe trên URL nếu có
+function loadVoices() {
+  cachedVoices = window.speechSynthesis.getVoices();
+}
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+  loadVoices();
+}
+
 const urlParams = new URLSearchParams(window.location.search);
-const kidName = urlParams.get('con');
-if (kidName) {
-  document.getElementById('welcomeText').textContent = `Chào bé ${kidName}! Cùng học Nhật – Trung mỗi ngày nhé 🌟`;
+let savedKidName = urlParams.get('con') || localStorage.getItem('registeredKidName') || '';
+let isUnlocked = Boolean(savedKidName);
+
+function updateHeaderWelcome() {
+  if (savedKidName) {
+    document.getElementById('welcomeText').textContent = `Chào bé ${savedKidName}! Chinh phục 10 từ Trung – Nhật mỗi ngày nhé 🌟`;
+  }
+}
+updateHeaderWelcome();
+
+function sendToGoogleSheet(payload) {
+  if (!GOOGLE_SHEET_URL || GOOGLE_SHEET_URL.includes("DAN_LINK")) return;
+  fetch(GOOGLE_SHEET_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  }).catch(err => console.log("Lỗi gửi dữ liệu:", err));
+}
+
+function handleUnlockSubmit(event) {
+  event.preventDefault();
+  const kidInput = document.getElementById('inputKidName').value.trim();
+  const contactInput = document.getElementById('inputContact').value.trim();
+  const ageInput = document.getElementById('inputAge').value;
+  if (!kidInput || !contactInput) return;
+
+  localStorage.setItem('registeredKidName', kidInput);
+  localStorage.setItem('registeredContact', contactInput);
+  savedKidName = kidInput;
+  isUnlocked = true;
+  updateHeaderWelcome();
+
+  sendToGoogleSheet({
+    type: "Đăng ký mở khóa HSK3",
+    kidName: kidInput,
+    contact: contactInput,
+    detail: `Độ tuổi: ${ageInput}`
+  });
+
+  alert(`🎉 Đã mở khóa trọn bộ bài học cho bé ${kidInput}!`);
+  renderLesson();
 }
 
 function toggleSpeed() {
@@ -298,17 +428,101 @@ function toggleSpeed() {
     btn.classList.add('slow');
   } else {
     speechRate = 1.0;
-    btn.textContent = "Tốc độ: Bình thường (1.0x)";
+    btn.textContent = "Tốc độ: Chuẩn (1.0x)";
     btn.classList.remove('slow');
   }
 }
 
-function speak(text, lang) {
+function speak(text, lang, onEndCallback = null) {
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = lang; // 'ja-JP' hoặc 'zh-CN'
+  utter.lang = lang;
   utter.rate = speechRate;
+  utter.pitch = 1.05; // Cao độ thân thiện với trẻ em
+
+  const voices = cachedVoices.length ? cachedVoices : window.speechSynthesis.getVoices();
+
+  if (lang === 'ja-JP') {
+    // Ưu tiên giọng Neural tự nhiên nhất của Nhật
+    const preferredJp = voices.find(v =>
+      v.lang.includes('ja') &&
+      (v.name.includes('Nanami') || v.name.includes('Google') || v.name.includes('Kyoko') || v.name.includes('O-Ren') || v.name.includes('Haruka'))
+    ) || voices.find(v => v.lang.includes('ja'));
+    if (preferredJp) utter.voice = preferredJp;
+  } else if (lang === 'zh-CN') {
+    // Ưu tiên giọng Neural tự nhiên nhất của Trung Quốc
+    const preferredCn = voices.find(v =>
+      (v.lang.includes('zh-CN') || v.lang.includes('zh_CN')) &&
+      (v.name.includes('Xiaoxiao') || v.name.includes('Google') || v.name.includes('Ting-Ting') || v.name.includes('Yaoyao'))
+    ) || voices.find(v => v.lang.includes('zh'));
+    if (preferredCn) utter.voice = preferredCn;
+  }
+
+  if (onEndCallback) {
+    utter.onend = onEndCallback;
+    utter.onerror = onEndCallback;
+  }
   window.speechSynthesis.speak(utter);
+}
+
+function stopAutoPlay() {
+  isAutoPlaying = false;
+  clearTimeout(autoPlayTimer);
+  window.speechSynthesis.cancel();
+  const btn = document.getElementById('autoPlayBtn');
+  if (btn) {
+    btn.textContent = "▶️ Nghe tự động 10 từ";
+    btn.classList.remove('playing');
+  }
+  document.querySelectorAll('.vocab-card').forEach(c => c.classList.remove('speaking-now'));
+}
+
+function toggleAutoPlay() {
+  if (isAutoPlaying) {
+    stopAutoPlay();
+    return;
+  }
+  const activeDay = getCurrentDay();
+  const lesson = LESSONS.find(l => l.day === activeDay);
+  if (!lesson || (!isUnlocked && activeDay > FREE_DAYS_LIMIT)) return;
+
+  isAutoPlaying = true;
+  const btn = document.getElementById('autoPlayBtn');
+  btn.textContent = "⏹️ Dừng nghe tự động";
+  btn.classList.add('playing');
+
+  let index = 0;
+  function playNextCard() {
+    if (!isAutoPlaying || index >= lesson.vocab.length) {
+      stopAutoPlay();
+      return;
+    }
+    const item = lesson.vocab[index];
+    document.querySelectorAll('.vocab-card').forEach(c => c.classList.remove('speaking-now'));
+    const cardEl = document.getElementById(`vocab-card-${index}`);
+    if (cardEl) {
+      cardEl.classList.add('speaking-now');
+      cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Đọc tiếng Trung lần 1 -> Tiếng Trung lần 2 -> Tiếng Nhật -> Chuyển thẻ tiếp theo
+    speak(item.cn, 'zh-CN', () => {
+      if (!isAutoPlaying) return;
+      autoPlayTimer = setTimeout(() => {
+        speak(item.cn, 'zh-CN', () => {
+          if (!isAutoPlaying) return;
+          autoPlayTimer = setTimeout(() => {
+            speak(item.speakJp, 'ja-JP', () => {
+              if (!isAutoPlaying) return;
+              index++;
+              autoPlayTimer = setTimeout(playNextCard, 700);
+            });
+          }, 400);
+        });
+      }, 400);
+    });
+  }
+  playNextCard();
 }
 
 function getCurrentDay() {
@@ -318,6 +532,7 @@ function getCurrentDay() {
 }
 
 function goToDay(dayNum) {
+  stopAutoPlay();
   window.location.hash = `#/ngay/${dayNum}`;
 }
 
@@ -325,8 +540,9 @@ function renderNav(activeDay) {
   const nav = document.getElementById('dayNav');
   nav.innerHTML = LESSONS.map(l => {
     const isDone = completedDays.includes(l.day) ? 'done' : '';
+    const isLocked = (!isUnlocked && l.day > FREE_DAYS_LIMIT) ? 'locked' : '';
     const isActive = l.day === activeDay ? 'active' : '';
-    return `<button class="day-btn ${isActive} ${isDone}" onclick="goToDay(${l.day})">Ngày ${l.day}</button>`;
+    return `<button class="day-btn ${isActive} ${isDone} ${isLocked}" onclick="goToDay(${l.day})">Ngày ${l.day}</button>`;
   }).join('');
 }
 
@@ -341,8 +557,15 @@ function checkAnswer(dayNum, selectedIdx, correctIdx, btnEl) {
     fb.style.color = "#2D6A4F";
     if (!completedDays.includes(dayNum)) {
       completedDays.push(dayNum);
-      localStorage.setItem('completedDaysJpCn', JSON.stringify(completedDays));
+      localStorage.setItem('completedDaysHsk3', JSON.stringify(completedDays));
       renderNav(dayNum);
+
+      sendToGoogleSheet({
+        type: "Hoàn thành bài học HSK3",
+        kidName: savedKidName || "Khách (Chưa đăng ký)",
+        contact: localStorage.getItem('registeredContact') || "",
+        detail: `Đạt sao Ngày ${dayNum} (10 từ)`
+      });
     }
   } else {
     btnEl.classList.add('wrong');
@@ -357,19 +580,50 @@ function renderLesson() {
   const lesson = LESSONS.find(l => l.day === activeDay);
   renderNav(activeDay);
 
-  const vocabHtml = lesson.vocab.map(v => `
-    <div class="vocab-card">
+  if (!isUnlocked && activeDay > FREE_DAYS_LIMIT) {
+    document.getElementById('appContent').innerHTML = `
+      <div class="gate-box">
+        <h3>🔓 Mở khóa trọn bộ lộ trình HSK 3 cho bé</h3>
+        <p>Bé đã hoàn thành ${FREE_DAYS_LIMIT} ngày trải nghiệm đầu tiên! Bố mẹ hãy điền thông tin bên dưới để mở khóa ngay <strong>Ngày 4 đến Ngày 7</strong> và nhận lộ trình học 10 từ/ngày cho bé nhé.</p>
+        <form class="gate-form" onsubmit="handleUnlockSubmit(event)">
+          <div>
+            <label>Tên gọi ở nhà của bé *</label>
+            <input type="text" id="inputKidName" placeholder="Ví dụ: Tiểu Bối, Minh Anh..." required>
+          </div>
+          <div>
+            <label>Độ tuổi của bé</label>
+            <select id="inputAge">
+              <option value="4-6 tuổi (Mẫu giáo - Lớp 1)">4 – 6 tuổi (Mẫu giáo – Lớp 1)</option>
+              <option value="7-9 tuổi (Lớp 2 - Lớp 4)">7 – 9 tuổi (Lớp 2 – Lớp 4)</option>
+              <option value="10-12 tuổi (Lớp 5 - Lớp 6)">10 – 12 tuổi (Lớp 5 – Lớp 6)</option>
+            </select>
+          </div>
+          <div>
+            <label>Số Zalo / Facebook hoặc Email phụ huynh *</label>
+            <input type="text" id="inputContact" placeholder="Để nhận tài liệu & theo dõi tiến độ của bé" required>
+          </div>
+          <button type="submit" class="btn-unlock">Mở khóa bài học ngay 🚀</button>
+        </form>
+        <p class="privacy-note">🔒 Thông tin được bảo mật và chỉ dùng để gửi tài liệu học tập cho bé.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const vocabHtml = lesson.vocab.map((v, idx) => `
+    <div class="vocab-card" id="vocab-card-${idx}">
+      <span class="card-num">${idx + 1}/10</span>
       <div class="emoji">${v.emoji}</div>
-      <div class="jp-word"><ruby>${v.jp}<rt>${v.jp !== v.ruby ? v.ruby : ''}</rt></ruby></div>
-      <div class="romaji">${v.romaji}</div>
+      <div class="cn-word">${v.cn}</div>
+      <div class="pinyin">${v.pinyin}</div>
       <div class="vi-word">${v.vi}</div>
-      <div class="cn-box">
-        <div class="cn-word">${v.cn}</div>
-        <div class="pinyin">${v.pinyin}</div>
+      <div class="jp-box">
+        <div class="jp-word"><ruby>${v.jp}<rt>${v.jp !== v.speakJp ? v.speakJp : ''}</rt></ruby></div>
+        <div class="romaji">${v.romaji}</div>
       </div>
       <div class="audio-row">
-        <button class="btn-speak btn-jp" onclick="speak('${v.jp}', 'ja-JP')">🇯🇵 Nghe JP</button>
-        <button class="btn-speak btn-cn" onclick="speak('${v.cn}', 'zh-CN')">🇨🇳 Nghe CN</button>
+        <button class="btn-speak btn-cn" onclick="stopAutoPlay(); speak('${v.cn}', 'zh-CN')">🇨🇳 Nghe CN</button>
+        <button class="btn-speak btn-jp" onclick="stopAutoPlay(); speak('${v.speakJp}', 'ja-JP')">🇯🇵 Nghe JP</button>
       </div>
     </div>
   `).join('');
@@ -377,15 +631,15 @@ function renderLesson() {
   const sentenceHtml = lesson.sentences.map(s => `
     <div class="sentence-card">
       <div class="sentence-line">
-        <span class="sentence-text">🇯🇵 ${s.jp}</span>
-        <button class="btn-speak btn-jp" onclick="speak('${s.jp}', 'ja-JP')">🔊 Đọc</button>
-      </div>
-      <div class="sentence-line">
         <div>
           <span class="sentence-text" style="color:#D62828;">🇨🇳 ${s.cn}</span>
           <span class="sentence-sub">${s.pinyin}</span>
         </div>
-        <button class="btn-speak btn-cn" onclick="speak('${s.cn}', 'zh-CN')">🔊 Đọc</button>
+        <button class="btn-speak btn-cn" onclick="stopAutoPlay(); speak('${s.cn}', 'zh-CN')">🔊 Đọc CN</button>
+      </div>
+      <div class="sentence-line">
+        <span class="sentence-text">🇯🇵 ${s.jp}</span>
+        <button class="btn-speak btn-jp" onclick="stopAutoPlay(); speak('${s.speakJp}', 'ja-JP')">🔊 Đọc JP</button>
       </div>
       <div class="sentence-vi">🇻🇳 ${s.vi}</div>
     </div>
@@ -402,10 +656,10 @@ function renderLesson() {
       <h2>${lesson.title}</h2>
     </div>
 
-    <div class="section-title">📚 1. Từ vựng hôm nay (Bấm nút để nghe phát âm Nhật – Trung)</div>
+    <div class="section-title">📚 1. 10 Từ vựng hôm nay (Trung – Việt – Nhật)</div>
     <div class="vocab-grid">${vocabHtml}</div>
 
-    <div class="section-title">💬 2. Mẫu câu giao tiếp Nhật – Trung – Việt</div>
+    <div class="section-title">💬 2. Mẫu câu phản xạ thực tế</div>
     ${sentenceHtml}
 
     <div class="quiz-box">
